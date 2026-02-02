@@ -75,22 +75,28 @@
             max-width: 100%;
         }
 
-        /* Vertical Button Stack */
         .btn-container { 
             display: flex; 
-            flex-direction: column; /* Stacks buttons vertically */
+            flex-direction: column;
             justify-content: center; 
             align-items: center; 
             gap: 15px; 
             width: 100%;
-            position: relative;
+        }
+
+        /* The placeholder keeps the NO button's space reserved */
+        .no-button-placeholder {
+            width: 120px; /* Adjust to match button width */
+            height: 50px; /* Adjust to match button height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         button {
             padding: 12px 20px;
             font-family: 'Press Start 2P', cursive;
             font-size: clamp(0.5rem, 1.2vw, 0.7rem);
-            /* Reduced border thickness to half (2px) */
             border: 2px solid var(--pixel-dark);
             background: white;
             cursor: pointer;
@@ -101,14 +107,12 @@
         button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--pixel-dark); }
 
         #yesBtn { 
-            /* Matches YES button fill to the background color */
             background-color: var(--bg-color); 
             color: white; 
             transition: transform 0.1s; 
         }
 
         #noBtn { 
-            /* Initial relative position under YES */
             position: relative; 
         }
 
@@ -132,7 +136,9 @@
                 <h1>will you be<br>my valentine? 👉🏼👈🏼</h1>
                 <div class="btn-container">
                     <button id="yesBtn">YES</button>
-                    <button id="noBtn">NO</button>
+                    <div class="no-button-placeholder">
+                        <button id="noBtn">NO</button>
+                    </div>
                 </div>
             </div>
 
@@ -155,12 +161,10 @@
             letter.style.display = 'block';
         });
 
-        // The "No" button logic
         noBtn.addEventListener('mouseover', () => {
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             
-            // Becomes fixed only after the first hover
             noBtn.style.position = 'fixed';
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
@@ -173,6 +177,8 @@
             askStage.style.display = 'none';
             successMessage.style.display = 'block';
             document.body.style.background = '#ff85a1';
+            // Also hide the runaway NO button if it's currently visible
+            noBtn.style.display = 'none';
         });
     </script>
 </body>
