@@ -56,16 +56,15 @@
             justify-content: center;
             align-items: center;
             height: 100%; 
-            /* Increased horizontal padding to keep text away from edges */
-            padding: 0 15%; 
+            padding: 0 18%; 
             box-sizing: border-box;
         }
 
         h1 { 
             color: var(--pixel-dark); 
-            font-size: clamp(0.7rem, 1.8vw, 1rem); 
-            line-height: 2.2; 
-            margin-bottom: 25px;
+            font-size: clamp(0.6rem, 1.5vw, 0.9rem); 
+            line-height: 1.8; 
+            margin-bottom: 20px;
             text-align: center;
             width: 100%;
         }
@@ -74,15 +73,15 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            gap: 15px; 
+            gap: 12px; 
             width: 100%;
-            min-height: 140px; 
+            min-height: 120px; 
         }
 
         button {
-            padding: 12px 20px;
+            padding: 10px 15px;
             font-family: 'Press Start 2P', cursive;
-            font-size: clamp(0.5rem, 1.2vw, 0.7rem);
+            font-size: clamp(0.4rem, 1vw, 0.6rem);
             border: 2px solid var(--pixel-dark);
             background: white;
             cursor: pointer;
@@ -98,23 +97,33 @@
         #noBtn { position: relative; transition: all 0.4s ease-out; }
 
         #slotStage { display: none; flex-direction: column; align-items: center; width: 100%; }
-        .slots-ui { display: flex; gap: 15px; margin-bottom: 15px; }
+        .slots-ui { display: flex; gap: 10px; margin-bottom: 10px; }
         .slot {
-            width: 80px; height: 100px;
+            width: 60px; height: 80px;
             background: white;
             border: 3px solid var(--pixel-dark);
             display: flex; align-items: center; justify-content: center;
-            font-size: 2rem;
+            font-size: 1.5rem;
         }
 
         #gift-reveal {
-            height: 60px; 
-            font-size: 0.6rem;
+            height: 50px; 
+            font-size: 0.5rem;
             color: var(--pixel-dark);
             text-align: center;
-            margin-bottom: 15px;
-            line-height: 1.8;
-            max-width: 100%;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        #finalGiftDisplay {
+            border: 2px solid var(--pixel-dark);
+            padding: 10px;
+            margin: 10px 0;
+            font-size: clamp(0.45rem, 1.1vw, 0.6rem);
+            background: white;
+            color: var(--pixel-dark);
+            text-align: center;
+            display: inline-block;
         }
 
         #muteToggle {
@@ -130,20 +139,14 @@
         #successMessage, #finalThanks { display: none; text-align: center; width: 100%; }
         #finalizeBtn { visibility: hidden; }
 
-        /* FIX: Narrower wrap for the last screen */
-        .final-text-wrap {
-            max-width: 90%; 
-            margin: 0 auto;
-        }
-
         .lazy-note {
-            /* Reduced font size and improved line height for the long note */
-            font-size: clamp(0.35rem, 1vw, 0.45rem); 
+            font-size: clamp(0.35rem, 0.9vw, 0.45rem); 
             color: var(--pixel-dark); 
-            line-height: 1.6; 
-            margin-top: 20px; 
+            line-height: 1.5; 
+            margin-top: 15px; 
             width: 100%;
             display: block;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -193,15 +196,17 @@
                 </div>
             </div>
 
-            <div id="finalThanks" class="final-text-wrap">
-                <h1 style="font-size: clamp(0.6rem, 1.4vw, 0.75rem); line-height: 1.6; margin-bottom: 10px;">
-                    can't wait! ❤️<br><br>
+            <div id="finalThanks">
+                <h1 style="font-size: clamp(0.5rem, 1.2vw, 0.7rem); line-height: 1.6; margin-bottom: 5px;">
                     sorry i'm not here on v-day<br>
                     but keep your evening free<br>
-                    on 16th feb!
+                    on 16th feb! ❤️
                 </h1>
+                
+                <div id="finalGiftDisplay"></div>
+
                 <span class="lazy-note">
-                    (take a screenshot of your gift and send it to me cause i was too lazy to build a way to automatically send me a response lol)
+                    (send me a screenshot of your gift cause i was too lazy to build a way to automatically know lol)
                 </span>
             </div>
 
@@ -214,9 +219,6 @@
         const sfxMove = document.getElementById('sfxMove');
         const sfxSpin = document.getElementById('sfxSpin');
         bgMusic.volume = 0.05;
-        sfxClick.volume = 1.0;
-        sfxMove.volume = 1.0;
-        sfxSpin.volume = 1.0;
 
         const gifts = [
             { emoji: '💋', text: 'lots of kisses' },
@@ -310,9 +312,9 @@
                         document.getElementById('slot3').innerText = winGift.emoji;
                         giftReveal.innerHTML = `gift unlocked:<br>${winGift.text}`;
                     } else {
-                        document.getElementById('slot1').innerText = gifts[0].emoji;
-                        document.getElementById('slot2').innerText = gifts[1].emoji;
-                        document.getElementById('slot3').innerText = gifts[2].emoji;
+                        document.getElementById('slot1').innerText = "🤡";
+                        document.getElementById('slot2').innerText = "🤡";
+                        document.getElementById('slot3').innerText = "🤡";
                         giftReveal.innerHTML = "oops, now you've to<br>give a gift to aditi!";
                     }
 
@@ -326,6 +328,18 @@
 
         finalizeBtn.addEventListener('click', () => {
             playSFX(sfxClick);
+            const rawText = giftReveal.innerText;
+            const emoji = document.getElementById('slot1').innerText;
+            
+            // Format text for final display
+            let finalGiftText = "";
+            if (rawText.includes("gift unlocked:")) {
+                finalGiftText = rawText.replace("gift unlocked:\n", "");
+            } else {
+                finalGiftText = "give a gift to aditi";
+            }
+
+            document.getElementById('finalGiftDisplay').innerText = `${emoji} ${finalGiftText}`;
             document.getElementById('slotStage').style.display = 'none';
             document.getElementById('finalThanks').style.display = 'block';
         });
