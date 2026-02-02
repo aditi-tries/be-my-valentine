@@ -176,8 +176,15 @@
             </div>
 
             <div id="finalThanks">
-                <h1>can't wait! ❤️<br><br>see you on<br>valentine's day!</h1>
-                <p style="font-size: 0.5rem; color: var(--pixel-dark); margin-top: 20px;">(take a screenshot of your gift!)</p>
+                <h1 style="font-size: clamp(0.6rem, 1.5vw, 0.8rem); line-height: 1.8;">
+                    can't wait! ❤️<br><br>
+                    sorry i'm not here on v-day<br>
+                    but keep your evening free<br>
+                    on 16th feb!
+                </h1>
+                <p style="font-size: 0.4rem; color: var(--pixel-dark); margin-top: 20px; padding: 0 10px; line-height: 1.4;">
+                    (take a screenshot of your gift and send it to me cause i was too lazy to build a way to automatically send me a response lol)
+                </p>
             </div>
 
         </div>
@@ -189,6 +196,9 @@
         const sfxMove = document.getElementById('sfxMove');
         const sfxSpin = document.getElementById('sfxSpin');
         bgMusic.volume = 0.15;
+        sfxClick.volume = 1.0;
+        sfxMove.volume = 1.0;
+        sfxSpin.volume = 1.0;
 
         const gifts = [
             { emoji: '💋', text: 'lots of kisses' },
@@ -200,7 +210,6 @@
         ];
 
         const playSFX = (audio) => { audio.currentTime = 0; audio.play().catch(() => {}); };
-        
         const initAudio = () => { 
             bgMusic.play().then(() => {
                 document.removeEventListener('mousemove', initAudio);
@@ -274,7 +283,7 @@
                     sfxSpin.pause();
                     sfxSpin.currentTime = 0;
                     
-                    const isWin = Math.random() < 0.8; // 80% Win Chance
+                    const isWin = Math.random() < 0.8; 
 
                     if (isWin) {
                         const winGift = gifts[Math.floor(Math.random() * gifts.length)];
