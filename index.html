@@ -72,13 +72,11 @@
             font-size: clamp(0.7rem, 1.8vw, 1rem); 
             line-height: 2.2; 
             margin-bottom: 30px;
-            max-width: 100%;
         }
 
         .btn-container { 
             display: flex; 
             flex-direction: column;
-            justify-content: center; 
             align-items: center; 
             gap: 15px; 
             width: 100%;
@@ -105,27 +103,55 @@
 
         button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--pixel-dark); }
 
-        #yesBtn { 
+        #yesBtn, #giftBtn, #spinBtn { 
             background-color: var(--bg-color); 
             color: white; 
             transition: transform 0.1s; 
         }
 
-        #noBtn { 
-            position: relative; 
-            /* Added transition for smooth movement */
-            transition: all 0.4s ease-out; 
-        }
+        #noBtn { position: relative; transition: all 0.4s ease-out; }
 
-        #successMessage {
-            display: none;
-            color: var(--pixel-red);
-            font-size: clamp(0.8rem, 2vw, 1.2rem);
-            line-height: 1.8;
+        /* Slot Machine Styles */
+        #slotStage { display: none; }
+        .slot-machine-container {
+            position: relative;
+            width: 450px;
+            height: 450px;
+            background-image: url('slot-machine.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-bottom: 20px;
         }
+        .slots-ui {
+            position: absolute;
+            top: 35%; 
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+        .slot {
+            width: 60px;
+            height: 80px;
+            background: white;
+            border: 3px solid var(--pixel-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        #gift-reveal { font-size: 0.6rem; color: var(--pixel-dark); margin-top: 10px; }
+        
+        #successMessage { display: none; }
     </style>
 </head>
 <body>
+
+    <audio id="bgMusic" loop src="music.mp3"></audio>
+    <audio id="sfxClick" src="click.mp3"></audio>
+    <audio id="sfxMove" src="move.mp3"></audio>
+    <audio id="sfxSpin" src="spin.mp3"></audio>
 
     <div class="envelope-wrapper" id="envelopeWrapper">
         <img src="envelope.png" alt="Envelope" class="custom-envelope">
@@ -145,50 +171,112 @@
 
             <div id="successMessage">
                 <h1>yay! ❤️<br><br>i knew you'd<br>say yes! ☺️</h1>
+                <button id="giftBtn" style="margin-top: 20px;">SELECT MY GIFT</button>
+            </div>
+
+            <div id="slotStage">
+                <div class="slot-machine-container">
+                    <div class="slots-ui">
+                        <div class="slot" id="slot1">?</div>
+                        <div class="slot" id="slot2">?</div>
+                        <div class="slot" id="slot3">?</div>
+                    </div>
+                </div>
+                <button id="spinBtn">SPIN</button>
+                <div id="gift-reveal"></div>
             </div>
         </div>
     </div>
 
     <script>
+        const bgMusic = document.getElementById('bgMusic');
+        const sfxClick = document.getElementById('sfxClick');
+        const sfxMove = document.getElementById('sfxMove');
+        const sfxSpin = document.getElementById('sfxSpin');
+
         const envelope = document.getElementById('envelopeWrapper');
         const letter = document.getElementById('letter');
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
+        const giftBtn = document.getElementById('giftBtn');
+        const spinBtn = document.getElementById('spinBtn');
+        
         const askStage = document.getElementById('askStage');
         const successMessage = document.getElementById('successMessage');
+        const slotStage = document.getElementById('slotStage');
+        const giftReveal = document.getElementById('gift-reveal');
+
+        const gifts = [
+            { emoji: '💋', text: 'LOTS OF KISSES' },
+            { emoji: '🍦', text: 'ICE CREAM ON ME' },
+            { emoji: '🎮', text: 'CO-OP GAMING' },
+            { emoji: '🍿', text: 'MOVIE OF YOUR CHOICE' },
+            { emoji: '🍕', text: 'PIZZA DATE' },
+            { emoji: '🏓', text: 'PICKLEBALL SESHS' }
+        ];
+
+        function playClick() { sfxClick.currentTime = 0; sfxClick.play(); }
 
         envelope.addEventListener('click', () => {
+            bgMusic.play(); // Start music on first interaction
+            playClick();
             envelope.style.display = 'none';
             letter.style.display = 'block';
         });
 
         noBtn.addEventListener('mouseover', () => {
-            // First hover: set it to fixed so it can move anywhere
+            sfxMove.currentTime = 0;
+            sfxMove.play();
             if (noBtn.style.position !== 'fixed') {
-                // Get current position before switching to fixed to prevent a single jump
                 const rect = noBtn.getBoundingClientRect();
                 noBtn.style.left = rect.left + 'px';
                 noBtn.style.top = rect.top + 'px';
                 noBtn.style.position = 'fixed';
                 noBtn.style.margin = '0';
             }
-
-            // Calculate new random position
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-            
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
-            
             const currentScale = parseFloat(yesBtn.style.transform.replace('scale(', '')) || 1;
             yesBtn.style.transform = `scale(${currentScale + 0.1})`;
         });
 
         yesBtn.addEventListener('click', () => {
+            playClick();
             askStage.style.display = 'none';
             successMessage.style.display = 'block';
-            document.body.style.background = '#ff85a1';
             noBtn.style.display = 'none';
+        });
+
+        giftBtn.addEventListener('click', () => {
+            playClick();
+            successMessage.style.display = 'none';
+            slotStage.style.display = 'block';
+        });
+
+        spinBtn.addEventListener('click', () => {
+            sfxSpin.play();
+            spinBtn.disabled = true;
+            giftReveal.innerText = "";
+            let count = 0;
+            const interval = setInterval(() => {
+                document.getElementById('slot1').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
+                document.getElementById('slot2').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
+                document.getElementById('slot3').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
+                count++;
+                if (count > 20) {
+                    clearInterval(interval);
+                    const final = gifts[Math.floor(Math.random() * gifts.length)];
+                    document.getElementById('slot1').innerText = final.emoji;
+                    document.getElementById('slot2').innerText = final.emoji;
+                    document.getElementById('slot3').innerText = final.emoji;
+                    giftReveal.innerText = `REWARD UNLOCKED: ${final.text}`;
+                    spinBtn.disabled = false;
+                    sfxSpin.pause();
+                    sfxSpin.currentTime = 0;
+                }
+            }, 80);
         });
     </script>
 </body>
