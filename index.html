@@ -25,7 +25,6 @@
             overflow: hidden;
         }
 
-        /* STAGE 1: ENVELOPE */
         .envelope-wrapper {
             cursor: pointer;
             animation: pixel-heart 1s steps(2) infinite;
@@ -38,7 +37,6 @@
         }
         .custom-envelope { width: 500px; max-width: 100%; height: auto; }
 
-        /* STAGE 2: THE PAPER (0.6x scale) */
         .letter {
             display: none;
             width: 702px; 
@@ -70,14 +68,13 @@
             text-align: center;
         }
 
-        /* Buttons */
         .btn-container { 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             gap: 15px; 
             width: 100%;
-            min-height: 140px; /* Locked to prevent layout shifts */
+            min-height: 140px; 
         }
 
         button {
@@ -98,7 +95,6 @@
         #noBtn, #spinBtn { background-color: white; color: var(--pixel-dark); }
         #noBtn { position: relative; transition: all 0.4s ease-out; }
 
-        /* SLOT MACHINE */
         #slotStage { display: none; flex-direction: column; align-items: center; width: 100%; }
         .slots-ui { display: flex; gap: 15px; margin-bottom: 15px; }
         .slot {
@@ -119,7 +115,6 @@
             max-width: 320px;
         }
 
-        /* VOLUME TOGGLE */
         #muteToggle {
             position: fixed;
             bottom: 20px;
@@ -130,7 +125,7 @@
             z-index: 100;
         }
 
-        #successMessage { display: none; text-align: center; }
+        #successMessage, #finalThanks { display: none; text-align: center; }
         #finalizeBtn { visibility: hidden; }
     </style>
 </head>
@@ -163,7 +158,7 @@
             <div id="successMessage">
                 <h1>yay! ❤️<br><br>i knew you'd<br>say yes! ☺️</h1>
                 <div class="btn-container">
-                    <button id="openGiftBtn">SELECT MY GIFT</button>
+                    <button id="openGiftBtn">SELECT GIFT</button>
                 </div>
             </div>
 
@@ -180,6 +175,11 @@
                 </div>
             </div>
 
+            <div id="finalThanks">
+                <h1>can't wait! ❤️<br><br>see you on<br>valentine's day!</h1>
+                <p style="font-size: 0.5rem; color: var(--pixel-dark); margin-top: 20px;">(take a screenshot of your gift!)</p>
+            </div>
+
         </div>
     </div>
 
@@ -188,55 +188,39 @@
         const sfxClick = document.getElementById('sfxClick');
         const sfxMove = document.getElementById('sfxMove');
         const sfxSpin = document.getElementById('sfxSpin');
-
         bgMusic.volume = 0.3;
-        sfxClick.volume = 1.0;
-        sfxMove.volume = 1.0;
-        sfxSpin.volume = 1.0;
-
-        const envelope = document.getElementById('envelopeWrapper');
-        const letter = document.getElementById('letter');
-        const muteBtn = document.getElementById('muteToggle');
-        const spinBtn = document.getElementById('spinBtn');
-        const finalizeBtn = document.getElementById('finalizeBtn');
-        const giftReveal = document.getElementById('gift-reveal');
 
         const gifts = [
             { emoji: '💋', text: 'lots of kisses' },
-            { emoji: '🍦', text: 'ice cream on me' },
+            { emoji: '🍦', text: 'ice cream on aditi' },
             { emoji: '🎮', text: 'co-op gaming' },
             { emoji: '🍿', text: 'movie of your choice' },
             { emoji: '🍕', text: 'pizza date' },
             { emoji: '🏓', text: 'pickleball / tennis sesh' }
         ];
 
-        // --- AUDIO HELPERS ---
-        const playSFX = (audio) => {
-            audio.currentTime = 0;
-            audio.play().catch(() => {});
-        };
-
-        const initAudio = () => {
+        const playSFX = (audio) => { audio.currentTime = 0; audio.play().catch(() => {}); };
+        
+        const initAudio = () => { 
             bgMusic.play().then(() => {
                 document.removeEventListener('mousemove', initAudio);
                 document.removeEventListener('touchstart', initAudio);
-            }).catch(() => {});
+            }).catch(() => {}); 
         };
 
         document.addEventListener('mousemove', initAudio);
         document.addEventListener('touchstart', initAudio);
 
-        muteBtn.addEventListener('click', (e) => {
+        document.getElementById('muteToggle').addEventListener('click', (e) => {
             e.stopPropagation();
             bgMusic.muted = !bgMusic.muted;
-            muteBtn.innerText = bgMusic.muted ? '🔇' : '🔊';
+            e.target.innerText = bgMusic.muted ? '🔇' : '🔊';
         });
 
-        // --- NAVIGATION ---
-        envelope.addEventListener('click', () => {
+        document.getElementById('envelopeWrapper').addEventListener('click', () => {
             playSFX(sfxClick);
-            envelope.style.display = 'none';
-            letter.style.display = 'block';
+            document.getElementById('envelopeWrapper').style.display = 'none';
+            document.getElementById('letter').style.display = 'block';
         });
 
         document.getElementById('noBtn').addEventListener('mouseover', function() {
@@ -250,7 +234,6 @@
             }
             this.style.left = Math.random() * (window.innerWidth - 100) + 'px';
             this.style.top = Math.random() * (window.innerHeight - 50) + 'px';
-            
             const currentScale = parseFloat(document.getElementById('yesBtn').style.transform.replace('scale(', '')) || 1;
             document.getElementById('yesBtn').style.transform = `scale(${currentScale + 0.1})`;
         });
@@ -268,7 +251,10 @@
             document.getElementById('slotStage').style.display = 'flex';
         });
 
-        // --- SLOT MACHINE LOGIC ---
+        const spinBtn = document.getElementById('spinBtn');
+        const finalizeBtn = document.getElementById('finalizeBtn');
+        const giftReveal = document.getElementById('gift-reveal');
+
         spinBtn.addEventListener('click', () => {
             playSFX(sfxClick);
             spinBtn.disabled = true;
@@ -288,7 +274,7 @@
                     sfxSpin.pause();
                     sfxSpin.currentTime = 0;
                     
-                    const isWin = Math.random() > 0.5;
+                    const isWin = Math.random() < 0.8; // 80% Win Chance
 
                     if (isWin) {
                         const winGift = gifts[Math.floor(Math.random() * gifts.length)];
@@ -312,8 +298,9 @@
         });
 
         finalizeBtn.addEventListener('click', () => {
-             playSFX(sfxClick);
-             alert("Choice Finalized! Happy Valentine's Day! ❤️");
+            playSFX(sfxClick);
+            document.getElementById('slotStage').style.display = 'none';
+            document.getElementById('finalThanks').style.display = 'block';
         });
     </script>
 </body>
