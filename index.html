@@ -10,7 +10,7 @@
             --pixel-pink: #ff85a1;
             --pixel-red: #ff0a54;
             --pixel-dark: #250902;
-            --bg-color: #CB2E72; /* Updated Background Color */
+            --bg-color: #CB2E72; 
         }
 
         body {
@@ -31,22 +31,26 @@
             100% { transform: scale(1); }
         }
 
-        /* STAGE 1: ENVELOPE */
+        /* STAGE 1: ENVELOPE (Max 750px, but fits screen) */
         .envelope-wrapper {
             cursor: pointer;
             animation: pixel-heart 1s steps(2) infinite;
+            max-width: 95vw;
         }
         .custom-envelope {
-            width: 500px;
+            width: 750px; 
+            max-width: 100%;
             height: auto;
             image-rendering: pixelated;
         }
 
-        /* STAGE 2: THE PAPER (Doubled Size) */
+        /* STAGE 2: THE PAPER (Max 1170px, but fits screen) */
         .letter {
             display: none;
-            width: 900px; /* Increased Size */
-            height: 800px; /* Increased Size */
+            width: 1170px; 
+            height: 1040px; 
+            max-width: 95vw;
+            max-height: 95vh;
             background-image: url('paper.png'); 
             background-size: contain;
             background-repeat: no-repeat;
@@ -56,40 +60,39 @@
         }
 
         #askStage {
-            /* Flexbox ensures text stays inside and centered */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100%; 
-            padding: 0 100px; /* Padding keeps text from hitting paper edges */
+            padding: 0 10%; 
             box-sizing: border-box;
         }
 
         h1 { 
             color: var(--pixel-dark); 
-            font-size: 1.2rem; /* Slightly larger for the bigger paper */
-            line-height: 1.8; 
-            margin-bottom: 40px;
-            max-width: 100%; /* Prevents text overflow */
+            font-size: clamp(0.8rem, 2.5vw, 1.4rem); /* Responsive font size */
+            line-height: 2; 
+            margin-bottom: 5vh;
+            max-width: 100%;
         }
 
         .btn-container { 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            gap: 30px; 
+            gap: 5%; 
             width: 100%;
         }
 
         button {
-            padding: 15px 25px;
+            padding: 2vh 3vw;
             font-family: 'Press Start 2P', cursive;
-            font-size: 0.8rem;
-            border: 4px solid var(--pixel-dark);
+            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
+            border: 5px solid var(--pixel-dark);
             background: white;
             cursor: pointer;
-            box-shadow: 6px 6px 0 var(--pixel-dark);
+            box-shadow: 8px 8px 0 var(--pixel-dark);
         }
 
         #yesBtn { background: var(--pixel-red); color: white; transition: transform 0.1s; }
@@ -102,8 +105,10 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 500px;
-            height: 500px;
+            width: 550px;
+            height: 550px;
+            max-width: 80%;
+            max-height: 80%;
             background-image: url('slot-machine.png'); 
             background-size: contain;
             background-repeat: no-repeat;
@@ -112,35 +117,40 @@
 
         .slots-ui {
             position: absolute;
-            top: 170px; 
+            top: 35%; 
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 15px;
+            gap: 3%;
         }
 
         .slot {
-            width: 80px;
-            height: 100px;
+            width: clamp(40px, 8vw, 85px);
+            height: clamp(50px, 10vw, 110px);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: clamp(1rem, 3vw, 2.2rem);
             background: white;
             border: 4px solid var(--pixel-dark);
         }
 
         #spinBtn {
             position: absolute;
-            bottom: 80px;
+            bottom: 15%;
             left: 50%;
             transform: translateX(-50%);
-            width: 220px;
+            width: 50%;
             background: #4cc9f0;
             color: white;
+            box-shadow: 6px 6px 0 var(--pixel-dark);
         }
 
-        #gift-reveal { font-size: 0.8rem; margin-top: 25px; color: var(--pixel-dark); }
+        #gift-reveal { 
+            font-size: clamp(0.6rem, 1.5vw, 1rem); 
+            margin-top: 5%; 
+            color: var(--pixel-dark); 
+        }
     </style>
 </head>
 <body>
@@ -204,7 +214,6 @@
 
         yesBtn.addEventListener('click', () => {
             askStage.style.display = 'none';
-            // Keeping the paper background for the slot machine since it's now so big!
             slotContainer.style.display = 'block';
         });
 
