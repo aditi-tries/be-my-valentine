@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Special Delivery</title>
+    <title>A Special Delivery ❤️</title>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -21,9 +21,10 @@
             background: var(--bg-color);
             font-family: 'Caveat', cursive;
             overflow: hidden;
+            transition: background 0.5s ease;
         }
 
-        /* Pulsing Envelope */
+        /* Pulsing Envelope Animation */
         @keyframes heartbeat {
             0% { transform: scale(1); }
             50% { transform: scale(1.08); }
@@ -58,11 +59,11 @@
 
         .heart-seal { font-size: 3.5rem; color: var(--primary-pink); z-index: 2; }
 
-        /* Letter & Slot Machine */
+        /* Letter Styling */
         .letter {
             display: none;
             width: 90%;
-            max-width: 450px;
+            max-width: 500px;
             background: var(--paper-white);
             padding: 40px 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
@@ -74,74 +75,107 @@
 
         h1 { color: #c9184a; font-size: 2.8rem; margin: 0 0 20px 0; }
 
-        .btn-container { height: 100px; display: flex; justify-content: center; align-items: center; gap: 20px; }
+        /* Buttons Area */
+        .btn-container { height: 120px; display: flex; justify-content: center; align-items: center; gap: 20px; }
 
         button {
             padding: 10px 25px;
             font-family: 'Caveat', cursive;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             border: 2px solid var(--primary-pink);
             border-radius: 8px;
             cursor: pointer;
             background: white;
             color: var(--primary-pink);
             transition: all 0.2s;
+            z-index: 10;
         }
 
         #yesBtn { background: var(--primary-pink); color: white; }
         #noBtn { position: absolute; }
 
-        /* Slot Machine Styles */
-        #slot-machine { display: none; margin-top: 20px; }
-        .slots {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            font-size: 4rem;
-            margin-bottom: 20px;
-            background: #fff0f3;
-            padding: 20px;
-            border-radius: 10px;
-            border: 3px dashed var(--primary-pink);
+        /* Slot Machine Area */
+        #slot-container {
+            display: none;
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            background-image: url('slot-machine.png'); 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
+
+        .slots-ui {
+            position: absolute;
+            top: 152px; /* Adjusted to fit the specific generated image slots */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
         .slot {
-            width: 80px;
-            height: 100px;
+            width: 65px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 2.5rem;
             background: white;
-            border-radius: 5px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 4px;
         }
-        #spinBtn { background: #ff4d6d; color: white; width: 100%; }
-        #gift-reveal { font-size: 2rem; color: #c9184a; margin-top: 15px; min-height: 40px; }
+
+        #spinBtn {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 0 #c9184a;
+        }
+
+        #spinBtn:active { transform: translateX(-50%) translateY(4px); box-shadow: none; }
+
+        #gift-reveal {
+            position: absolute;
+            bottom: 5px;
+            width: 100%;
+            font-size: 1.8rem;
+            color: #c9184a;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
     <div class="envelope-wrapper" id="envelopeWrapper">
-        <div class="envelope"><div class="heart-seal">❤️</div></div>
-        <p style="margin-top: 25px; font-size: 1.8rem; color: #ff758f;">Open your letter...</p>
+        <div class="envelope">
+            <div class="heart-seal">❤️</div>
+        </div>
+        <p style="margin-top: 25px; font-size: 1.8rem; color: #ff758f;">You have a letter...</p>
     </div>
 
     <div class="letter" id="letter">
-        <div id="ask">
+        <div id="askStage">
             <h1>Will you be my Valentine?</h1>
             <div class="btn-container">
                 <button id="yesBtn">Yes!</button>
-                <button id="noBtn">No</button>
+                <button id="noBtn" style="left: 55%;">No</button>
             </div>
         </div>
 
-        <div id="slot-machine">
-            <h1>Yay! Spin for your gift! 🎰</h1>
-            <div class="slots">
+        <div id="slot-container">
+            <div class="slots-ui">
                 <div class="slot" id="slot1">❓</div>
                 <div class="slot" id="slot2">❓</div>
                 <div class="slot" id="slot3">❓</div>
             </div>
-            <button id="spinBtn">SPIN</button>
+            <button id="spinBtn">SPIN FOR GIFT</button>
             <div id="gift-reveal"></div>
         </div>
     </div>
@@ -151,61 +185,78 @@
         const letter = document.getElementById('letter');
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        const askDiv = document.getElementById('ask');
-        const slotMachine = document.getElementById('slot-machine');
+        const askStage = document.getElementById('askStage');
+        const slotContainer = document.getElementById('slot-container');
         const spinBtn = document.getElementById('spinBtn');
         const giftText = document.getElementById('gift-reveal');
 
+        // Customize your gifts here!
         const gifts = [
-            { emoji: '🍕', name: 'A Fancy Pizza Date' },
-            { emoji: '👟', name: 'New Sneakers' },
-            { emoji: '🎮', name: 'A New Video Game' },
-            { emoji: '🍿', name: 'Movie Night of Your Choice' }
+            { emoji: '🍕', name: 'Fancy Dinner Date' },
+            { emoji: '🎮', name: 'Gaming Marathon' },
+            { emoji: '👟', name: 'New Kicks' },
+            { emoji: '🍿', name: 'Movie of your choice' }
         ];
 
+        // 1. Open Envelope
         envelope.addEventListener('click', () => {
             envelope.style.display = 'none';
             letter.style.display = 'block';
         });
 
+        // 2. No Button Logic
         noBtn.addEventListener('mouseover', () => {
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             noBtn.style.position = 'fixed';
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
+
+            // Make Yes button grow
             const currentScale = parseFloat(yesBtn.style.transform.replace('scale(', '')) || 1;
             yesBtn.style.transform = `scale(${currentScale + 0.15})`;
         });
 
+        // 3. Yes Button Logic -> Move to Slot Machine
         yesBtn.addEventListener('click', () => {
-            askDiv.style.display = 'none';
-            slotMachine.style.display = 'block';
+            askStage.style.display = 'none';
+            slotContainer.style.display = 'block';
             document.body.style.background = '#ffcad4';
         });
 
+        // 4. Slot Machine Logic
         spinBtn.addEventListener('click', () => {
             spinBtn.disabled = true;
             giftText.innerText = "Spinning...";
             
             let count = 0;
             const interval = setInterval(() => {
-                document.getElementById('slot1').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
-                document.getElementById('slot2').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
-                document.getElementById('slot3').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
-                count++;
+                const s1 = gifts[Math.floor(Math.random() * gifts.length)].emoji;
+                const s2 = gifts[Math.floor(Math.random() * gifts.length)].emoji;
+                const s3 = gifts[Math.floor(Math.random() * gifts.length)].emoji;
                 
-                if (count > 20) {
+                document.getElementById('slot1').innerText = s1;
+                document.getElementById('slot2').innerText = s2;
+                document.getElementById('slot3').innerText = s3;
+                
+                // Add a little blur while spinning
+                document.querySelectorAll('.slot').forEach(s => s.style.filter = 'blur(2px)');
+
+                count++;
+                if (count > 25) {
                     clearInterval(interval);
                     const finalGift = gifts[Math.floor(Math.random() * gifts.length)];
+                    
                     document.getElementById('slot1').innerText = finalGift.emoji;
                     document.getElementById('slot2').innerText = finalGift.emoji;
                     document.getElementById('slot3').innerText = finalGift.emoji;
-                    giftText.innerText = `You won: ${finalGift.name}!`;
+                    
+                    document.querySelectorAll('.slot').forEach(s => s.style.filter = 'none');
+                    giftText.innerText = `Winner: ${finalGift.name}! ❤️`;
                     spinBtn.innerText = "Re-spin?";
                     spinBtn.disabled = false;
                 }
-            }, 50);
+            }, 60);
         });
     </script>
 </body>
