@@ -21,39 +21,40 @@
             justify-content: center;
             background: var(--bg-color);
             font-family: 'Press Start 2P', cursive;
-            image-rendering: pixelated; /* Keeps everything sharp */
+            image-rendering: pixelated;
             overflow: hidden;
+            transition: background 0.5s steps(4);
         }
 
-        /* 8-Bit Pulse */
+        /* Retro Pulse Animation */
         @keyframes pixel-heart {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
 
-        /* Pixel Art Envelope */
+        /* Screen 1: Custom Envelope */
         .envelope-wrapper {
             cursor: pointer;
             text-align: center;
-            animation: pixel-heart 1s steps(2) infinite; /* Steps(2) makes it look jerky/retro */
+            animation: pixel-heart 1s steps(2) infinite;
         }
 
-        .envelope {
-            width: 200px;
-            height: 140px;
-            background: var(--pixel-pink);
-            position: relative;
-            border: 6px solid var(--pixel-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+        .custom-envelope {
+            width: 250px;
+            height: auto;
+            image-rendering: pixelated;
+            filter: drop-shadow(8px 8px 0 rgba(0,0,0,0.1));
         }
 
-        .heart-seal { font-size: 2rem; color: var(--pixel-red); }
+        .click-text {
+            margin-top: 25px;
+            font-size: 0.7rem;
+            color: var(--pixel-dark);
+            letter-spacing: 2px;
+        }
 
-        /* Pixel Letter Container */
+        /* Screen 2: The Letter */
         .letter {
             display: none;
             width: 90%;
@@ -65,29 +66,28 @@
             text-align: center;
         }
 
-        h1 { color: var(--pixel-red); font-size: 1.2rem; line-height: 1.6; margin-bottom: 40px; }
+        h1 { color: var(--pixel-red); font-size: 1rem; line-height: 1.8; margin-bottom: 40px; }
 
-        /* Retro Buttons */
+        /* Buttons */
         .btn-container { height: 120px; display: flex; justify-content: center; align-items: center; gap: 20px; }
 
         button {
             padding: 15px;
             font-family: 'Press Start 2P', cursive;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             border: 4px solid var(--pixel-dark);
             background: white;
             color: var(--pixel-dark);
             cursor: pointer;
             box-shadow: 4px 4px 0 var(--pixel-dark);
-            transition: transform 0.1s;
         }
 
         button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--pixel-dark); }
 
-        #yesBtn { background: var(--pixel-red); color: white; }
+        #yesBtn { background: var(--pixel-red); color: white; transition: transform 0.1s steps(2); }
         #noBtn { position: absolute; }
 
-        /* Pixel Slot Machine */
+        /* Screen 3: Slot Machine */
         #slot-container {
             display: none;
             position: relative;
@@ -97,20 +97,20 @@
             background-image: url('slot-machine.png'); 
             background-size: contain;
             background-repeat: no-repeat;
-            image-rendering: pixelated;
+            background-position: center;
         }
 
         .slots-ui {
             position: absolute;
-            top: 135px;
+            top: 135px; /* Adjust if your machine image slots are higher/lower */
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .slot {
-            width: 55px;
+            width: 52px;
             height: 70px;
             display: flex;
             align-items: center;
@@ -125,18 +125,24 @@
             bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
-            width: 200px;
+            width: 180px;
             background: #4cc9f0;
+            color: white;
         }
 
-        #gift-reveal { font-size: 0.7rem; margin-top: 20px; color: var(--pixel-dark); }
+        #gift-reveal { 
+            font-size: 0.6rem; 
+            margin-top: 15px; 
+            color: var(--pixel-dark); 
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
 
     <div class="envelope-wrapper" id="envelopeWrapper">
-        <div class="envelope"><div class="heart-seal">❤</div></div>
-        <p style="margin-top: 25px; font-size: 0.8rem;">[ CLICK START ]</p>
+        <img src="envelope.png" alt="Envelope" class="custom-envelope">
+        <p class="click-text">[ CLICK TO OPEN ]</p>
     </div>
 
     <div class="letter" id="letter">
@@ -144,7 +150,7 @@
             <h1>PLAYER 1:<br>WILL YOU BE MY VALENTINE?</h1>
             <div class="btn-container">
                 <button id="yesBtn">YES</button>
-                <button id="noBtn">NO</button>
+                <button id="noBtn" style="left: 55%;">NO</button>
             </div>
         </div>
 
@@ -169,41 +175,51 @@
         const spinBtn = document.getElementById('spinBtn');
         const giftText = document.getElementById('gift-reveal');
 
+        // Custom Gifts List
         const gifts = [
-            { emoji: '🍕', name: 'PIZZA LVL 99' },
-            { emoji: '🎮', name: 'CO-OP GAMING' },
-            { emoji: '🍦', name: 'ICE CREAM BUFF' },
-            { emoji: '💎', name: 'SECRET GIFT' }
+            { emoji: '🍕', name: 'PIZZA DATE' },
+            { emoji: '🎮', name: 'NEW GAME UNLOCKED' },
+            { emoji: '🎬', name: 'MOVIE NIGHT' },
+            { emoji: '💖', name: 'BIG SURPRISE' }
         ];
 
+        // 1. Open Letter
         envelope.addEventListener('click', () => {
             envelope.style.display = 'none';
             letter.style.display = 'block';
         });
 
+        // 2. No Button "Run Away" logic
         noBtn.addEventListener('mouseover', () => {
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             noBtn.style.position = 'fixed';
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
+            
+            // "Yes" button grows bigger
             const currentScale = parseFloat(yesBtn.style.transform.replace('scale(', '')) || 1;
             yesBtn.style.transform = `scale(${currentScale + 0.1})`;
         });
 
+        // 3. Move to Slot Machine
         yesBtn.addEventListener('click', () => {
             askStage.style.display = 'none';
             slotContainer.style.display = 'block';
             document.body.style.background = '#ff758f';
         });
 
+        // 4. Slot Machine Spin
         spinBtn.addEventListener('click', () => {
             spinBtn.disabled = true;
+            giftText.innerText = "SPINNING...";
             let count = 0;
+            
             const interval = setInterval(() => {
                 document.getElementById('slot1').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
                 document.getElementById('slot2').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
                 document.getElementById('slot3').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
+                
                 count++;
                 if (count > 20) {
                     clearInterval(interval);
@@ -211,7 +227,9 @@
                     document.getElementById('slot1').innerText = final.emoji;
                     document.getElementById('slot2').innerText = final.emoji;
                     document.getElementById('slot3').innerText = final.emoji;
-                    giftText.innerText = `YOU UNLOCKED: ${final.name}`;
+                    
+                    giftText.innerText = `ITEM ACQUIRED: ${final.name}`;
+                    spinBtn.innerText = "RE-ROLL?";
                     spinBtn.disabled = false;
                 }
             }, 80);
