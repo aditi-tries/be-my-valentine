@@ -58,8 +58,15 @@
             text-align: center;
         }
 
-        /* Buttons */
-        .btn-container { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .btn-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 15px; 
+            width: 100%;
+            min-height: 140px; 
+        }
+
         button {
             padding: 12px 20px;
             font-family: 'Press Start 2P', cursive;
@@ -70,15 +77,13 @@
             box-shadow: 4px 4px 0 var(--pixel-dark);
         }
 
-        /* Pink Style Buttons */
-        #yesBtn, #openGiftBtn, #selectFinalBtn { background-color: var(--bg-color); color: white; }
-        
-        /* White Style Buttons */
+        button:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        #yesBtn, #openGiftBtn, #finalizeBtn { background-color: var(--bg-color); color: white; }
         #noBtn, #spinBtn { background-color: white; color: var(--pixel-dark); }
 
         #noBtn { position: relative; transition: all 0.4s ease-out; }
 
-        /* SLOT MACHINE STAGE */
         #slotStage {
             display: none;
             flex-direction: column;
@@ -104,13 +109,13 @@
         }
 
         #gift-reveal {
-            height: 60px; /* Space for two lines */
+            height: 60px; 
             font-size: 0.6rem;
             color: var(--pixel-dark);
             text-align: center;
             margin-bottom: 15px;
             line-height: 1.8;
-            max-width: 300px; /* Forces text to wrap */
+            max-width: 320px;
         }
 
         #muteToggle {
@@ -124,7 +129,7 @@
         }
 
         #successMessage { display: none; text-align: center; }
-        #selectFinalBtn { display: none; margin-top: 10px; }
+        #finalizeBtn { visibility: hidden; }
     </style>
 </head>
 <body>
@@ -154,7 +159,9 @@
 
             <div id="successMessage">
                 <h1>yay! ❤️<br><br>i knew you'd<br>say yes! ☺️</h1>
-                <button id="openGiftBtn">SELECT MY GIFT</button>
+                <div class="btn-container">
+                    <button id="openGiftBtn">SELECT MY GIFT</button>
+                </div>
             </div>
 
             <div id="slotStage">
@@ -166,7 +173,7 @@
                 <div id="gift-reveal"></div>
                 <div class="btn-container">
                     <button id="spinBtn">SPIN</button>
-                    <button id="selectFinalBtn">SELECT GIFT</button>
+                    <button id="finalizeBtn">FINALIZE GIFT</button>
                 </div>
             </div>
         </div>
@@ -181,16 +188,16 @@
         const letter = document.getElementById('letter');
         const muteBtn = document.getElementById('muteToggle');
         const spinBtn = document.getElementById('spinBtn');
-        const selectFinalBtn = document.getElementById('selectFinalBtn');
+        const finalizeBtn = document.getElementById('finalizeBtn');
         const giftReveal = document.getElementById('gift-reveal');
 
         const gifts = [
-            { emoji: '💋', text: 'lots of<br>kisses' },
-            { emoji: '🍦', text: 'ice cream<br>on me' },
-            { emoji: '🎮', text: 'co-op<br>gaming' },
-            { emoji: '🍿', text: 'movie of<br>your choice' },
-            { emoji: '🍕', text: 'pizza<br>date' },
-            { emoji: '🏓', text: 'pickleball /<br>tennis sesh' }
+            { emoji: '💋', text: 'lots of kisses' },
+            { emoji: '🍦', text: 'ice cream on me' },
+            { emoji: '🎮', text: 'co-op gaming' },
+            { emoji: '🍿', text: 'movie of your choice' },
+            { emoji: '🍕', text: 'pizza date' },
+            { emoji: '🏓', text: 'pickleball / tennis sesh' }
         ];
 
         muteBtn.addEventListener('click', () => {
@@ -232,18 +239,15 @@
 
         spinBtn.addEventListener('click', () => {
             spinBtn.disabled = true;
+            finalizeBtn.disabled = true;
             giftReveal.innerHTML = "";
             sfxSpin.play();
             
             let iterations = 0;
             const timer = setInterval(() => {
-                const r1 = gifts[Math.floor(Math.random() * gifts.length)].emoji;
-                const r2 = gifts[Math.floor(Math.random() * gifts.length)].emoji;
-                const r3 = gifts[Math.floor(Math.random() * gifts.length)].emoji;
-                
-                document.getElementById('slot1').innerText = r1;
-                document.getElementById('slot2').innerText = r2;
-                document.getElementById('slot3').innerText = r3;
+                document.getElementById('slot1').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
+                document.getElementById('slot2').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
+                document.getElementById('slot3').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
                 iterations++;
 
                 if (iterations > 15) {
@@ -258,28 +262,25 @@
                         document.getElementById('slot1').innerText = winGift.emoji;
                         document.getElementById('slot2').innerText = winGift.emoji;
                         document.getElementById('slot3').innerText = winGift.emoji;
-                        giftReveal.innerHTML = `reward unlocked:<br>${winGift.text}`;
+                        // Formatted exactly as requested
+                        giftReveal.innerHTML = `gift unlocked:<br>${winGift.text}`;
                     } else {
-                        // Ensure at least one emoji is different to visually show a "loss"
-                        const fail1 = gifts[0].emoji;
-                        const fail2 = gifts[1].emoji;
-                        const fail3 = gifts[2].emoji;
-                        document.getElementById('slot1').innerText = fail1;
-                        document.getElementById('slot2').innerText = fail2;
-                        document.getElementById('slot3').innerText = fail3;
+                        document.getElementById('slot1').innerText = gifts[0].emoji;
+                        document.getElementById('slot2').innerText = gifts[1].emoji;
+                        document.getElementById('slot3').innerText = gifts[2].emoji;
                         giftReveal.innerHTML = "oops, now you've to<br>give a gift to aditi!";
                     }
 
                     spinBtn.innerText = "SPIN AGAIN";
-                    selectFinalBtn.style.display = "block";
+                    finalizeBtn.style.visibility = "visible";
                     spinBtn.disabled = false;
+                    finalizeBtn.disabled = false;
                 }
             }, 100);
         });
 
-        selectFinalBtn.addEventListener('click', () => {
-             alert("Gift Selected! ❤️");
-             // You can add a final screen here if you like!
+        finalizeBtn.addEventListener('click', () => {
+             alert("Final choice locked! ❤️");
         });
     </script>
 </body>
