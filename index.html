@@ -3,97 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Letter For You</title>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <title>A Special Delivery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --paper-white: #ffffff;
+            --bg-color: #f8edeb;
+        }
+
         body {
             margin: 0;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f8edeb;
+            background: var(--bg-color);
             font-family: 'Caveat', cursive;
             overflow: hidden;
         }
 
-        /* Envelope Styling */
+        /* Pulsing Animation */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
         .envelope-wrapper {
             cursor: pointer;
-            transition: transform 0.3s ease;
             text-align: center;
+            animation: heartbeat 1.5s ease-in-out infinite; /* This makes it pulse */
         }
-        .envelope-wrapper:hover { transform: scale(1.05); }
 
         .envelope {
-            width: 300px;
-            height: 200px;
+            width: 280px;
+            height: 180px;
             background: #f1a7a1;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2);
+            border-radius: 4px;
         }
+
+        /* Envelope Flap */
         .envelope::before {
             content: '';
             position: absolute;
             top: 0;
-            border-left: 150px solid transparent;
-            border-right: 150px solid transparent;
-            border-top: 100px solid #e5989b;
-        }
-        .heart-seal {
-            font-size: 3rem;
-            color: #ff4d6d;
-            z-index: 2;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 90px solid #e5989b;
         }
 
-        /* Letter Styling (Hidden initially) */
+        .heart-seal {
+            font-size: 3.5rem;
+            color: var(--primary-pink);
+            z-index: 2;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+
+        /* Letter Styling */
         .letter {
             display: none;
-            width: 80%;
-            max-width: 500px;
-            background: white;
-            padding: 40px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.1);
-            border-radius: 5px;
+            width: 90%;
+            max-width: 450px;
+            background: var(--paper-white);
+            padding: 50px 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 2px;
             text-align: center;
-            border: 1px solid #eee;
+            border: 1px solid #f1f1f1;
             position: relative;
+            transform: rotate(-1deg); /* Slight tilt for that "handwritten" vibe */
         }
 
         h1 {
-            color: #d00000;
-            font-size: 3.5rem;
-            margin-bottom: 40px;
-            line-height: 1.2;
+            color: #c9184a;
+            font-size: 3.2rem;
+            margin: 0 0 40px 0;
         }
 
         .btn-container {
-            height: 150px;
+            height: 120px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 30px;
+            gap: 25px;
         }
 
         button {
-            padding: 10px 25px;
+            padding: 12px 30px;
             font-family: 'Caveat', cursive;
             font-size: 1.8rem;
-            border: 2px solid #ff4d6d;
-            border-radius: 10px;
+            border: 2px solid var(--primary-pink);
+            border-radius: 8px;
             cursor: pointer;
             background: white;
-            color: #ff4d6d;
-            transition: all 0.2s;
+            color: var(--primary-pink);
+            transition: transform 0.2s ease, background 0.2s ease;
         }
 
-        #yesBtn { background: #ff4d6d; color: white; }
+        #yesBtn { background: var(--primary-pink); color: white; }
         #noBtn { position: absolute; }
 
-        .success-msg { display: none; font-size: 3rem; color: #ff4d6d; }
+        #success { display: none; }
     </style>
 </head>
 <body>
@@ -102,17 +118,21 @@
         <div class="envelope">
             <div class="heart-seal">❤️</div>
         </div>
-        <p style="margin-top: 20px; font-size: 1.5rem; color: #666;">Click to open</p>
+        <p style="margin-top: 25px; font-size: 1.8rem; color: #ff758f;">Open your letter...</p>
     </div>
 
     <div class="letter" id="letter">
-        <h1 id="questionText">Will you be my Valentine?</h1>
-        <div class="btn-container" id="controls">
-            <button id="yesBtn">Yes!</button>
-            <button id="noBtn">No</button>
+        <div id="ask">
+            <h1>Will you be my Valentine?</h1>
+            <div class="btn-container">
+                <button id="yesBtn">Yes!</button>
+                <button id="noBtn">No</button>
+            </div>
         </div>
-        <div class="success-msg" id="successMsg">
-            Yay! See you on the 14th! 🥰
+
+        <div id="success">
+            <h1 style="font-size: 4rem;">YES! ❤️</h1>
+            <p style="font-size: 2rem;">I love you! Can't wait.</p>
         </div>
     </div>
 
@@ -121,36 +141,34 @@
         const letter = document.getElementById('letter');
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        const controls = document.getElementById('controls');
-        const questionText = document.getElementById('questionText');
-        const successMsg = document.getElementById('successMsg');
+        const askDiv = document.getElementById('ask');
+        const successDiv = document.getElementById('success');
 
-        // Opening the letter
+        // Reveal Letter
         envelope.addEventListener('click', () => {
             envelope.style.display = 'none';
             letter.style.display = 'block';
         });
 
-        // The running "No" button
+        // "No" Button avoids the mouse
         noBtn.addEventListener('mouseover', () => {
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             
+            noBtn.style.position = 'fixed';
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
-            noBtn.style.position = 'fixed';
-            
-            // Subtle "Yes" growth
-            const currentScale = parseFloat(yesBtn.style.transform.replace('scale(', '')) || 1;
-            yesBtn.style.transform = `scale(${currentScale + 0.1})`;
+
+            // Make Yes button grow bigger each time he tries to hit No
+            const currentScale = yesBtn.style.transform.replace('scale(', '').replace(')', '') || 1;
+            yesBtn.style.transform = `scale(${parseFloat(currentScale) + 0.15})`;
         });
 
-        // The final "Yes"
+        // "Yes" Clicked
         yesBtn.addEventListener('click', () => {
-            controls.style.display = 'none';
-            questionText.style.display = 'none';
-            successMsg.style.display = 'block';
-            document.body.style.background = '#ffb3c1';
+            askDiv.style.display = 'none';
+            successDiv.style.display = 'block';
+            document.body.style.background = '#ffcad4';
         });
     </script>
 </body>
