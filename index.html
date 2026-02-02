@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fff0f3; /* Soft pink */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+        }
+
+        h1 {
+            color: #ff4d6d;
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            height: 150px; /* Space for the growing button */
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        #yesBtn {
+            background-color: #ff4d6d;
+            color: white;
+        }
+
+        #noBtn {
+            background-color: #adb5bd;
+            color: white;
+            position: absolute;
+        }
+
+        .celebration {
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="mainStage">
+        <h1>Will you be my Valentine? 🌹</h1>
+        <div class="btn-container">
+            <button id="yesBtn">YES</button>
+            <button id="noBtn" style="left: 55%;">NO</button>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebrationStage">
+        <h1 style="font-size: 4rem;">YES! ❤️</h1>
+        <p style="font-size: 1.5rem; color: #555;">I knew you'd say that (eventually).</p>
+        <div style="font-size: 5rem;">✨🥰✨</div>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const mainStage = document.getElementById('mainStage');
+        const celebrationStage = document.getElementById('celebrationStage');
+
+        let yesScale = 1;
+        let noScale = 1;
+
+        // The "Run Away" Logic
+        noBtn.addEventListener('mouseover', () => {
+            // Move No Button
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+
+            // Make Yes Button bigger
+            yesScale += 0.15;
+            yesBtn.style.transform = `scale(${yesScale})`;
+
+            // Make No Button smaller
+            noScale -= 0.05;
+            noBtn.style.transform = `scale(${noScale})`;
+        });
+
+        // The "Success" Logic
+        yesBtn.addEventListener('click', () => {
+            mainStage.style.display = 'none';
+            celebrationStage.style.display = 'block';
+            document.body.style.background = '#ffcad4'; // Darker pink background
+        });
+    </script>
+</body>
+</html>
