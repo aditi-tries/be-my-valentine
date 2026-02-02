@@ -3,117 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Be My Valentine?</title>
+    <title>A Letter For You</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #fff0f3; /* Soft pink */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8edeb;
+            font-family: 'Caveat', cursive;
             overflow: hidden;
         }
 
-        .container {
+        /* Envelope Styling */
+        .envelope-wrapper {
+            cursor: pointer;
+            transition: transform 0.3s ease;
             text-align: center;
-            z-index: 1;
+        }
+        .envelope-wrapper:hover { transform: scale(1.05); }
+
+        .envelope {
+            width: 300px;
+            height: 200px;
+            background: #f1a7a1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #e5989b;
+        }
+        .heart-seal {
+            font-size: 3rem;
+            color: #ff4d6d;
+            z-index: 2;
+        }
+
+        /* Letter Styling (Hidden initially) */
+        .letter {
+            display: none;
+            width: 80%;
+            max-width: 500px;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #eee;
+            position: relative;
         }
 
         h1 {
-            color: #ff4d6d;
-            font-size: 3rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            color: #d00000;
+            font-size: 3.5rem;
+            margin-bottom: 40px;
+            line-height: 1.2;
         }
 
         .btn-container {
+            height: 150px;
             display: flex;
-            gap: 20px;
             justify-content: center;
             align-items: center;
-            margin-top: 30px;
-            height: 150px; /* Space for the growing button */
+            gap: 30px;
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
+            padding: 10px 25px;
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            border: 2px solid #ff4d6d;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: white;
+            color: #ff4d6d;
+            transition: all 0.2s;
         }
 
-        #yesBtn {
-            background-color: #ff4d6d;
-            color: white;
-        }
+        #yesBtn { background: #ff4d6d; color: white; }
+        #noBtn { position: absolute; }
 
-        #noBtn {
-            background-color: #adb5bd;
-            color: white;
-            position: absolute;
-        }
-
-        .celebration {
-            display: none;
-            text-align: center;
-        }
+        .success-msg { display: none; font-size: 3rem; color: #ff4d6d; }
     </style>
 </head>
 <body>
 
-    <div class="container" id="mainStage">
-        <h1>Will you be my Valentine? 🌹</h1>
-        <div class="btn-container">
-            <button id="yesBtn">YES</button>
-            <button id="noBtn" style="left: 55%;">NO</button>
+    <div class="envelope-wrapper" id="envelopeWrapper">
+        <div class="envelope">
+            <div class="heart-seal">❤️</div>
+        </div>
+        <p style="margin-top: 20px; font-size: 1.5rem; color: #666;">Click to open</p>
+    </div>
+
+    <div class="letter" id="letter">
+        <h1 id="questionText">Will you be my Valentine?</h1>
+        <div class="btn-container" id="controls">
+            <button id="yesBtn">Yes!</button>
+            <button id="noBtn">No</button>
+        </div>
+        <div class="success-msg" id="successMsg">
+            Yay! See you on the 14th! 🥰
         </div>
     </div>
 
-    <div class="celebration" id="celebrationStage">
-        <h1 style="font-size: 4rem;">YES! ❤️</h1>
-        <p style="font-size: 1.5rem; color: #555;">I knew you'd say that (eventually).</p>
-        <div style="font-size: 5rem;">✨🥰✨</div>
-    </div>
-
     <script>
+        const envelope = document.getElementById('envelopeWrapper');
+        const letter = document.getElementById('letter');
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        const mainStage = document.getElementById('mainStage');
-        const celebrationStage = document.getElementById('celebrationStage');
+        const controls = document.getElementById('controls');
+        const questionText = document.getElementById('questionText');
+        const successMsg = document.getElementById('successMsg');
 
-        let yesScale = 1;
-        let noScale = 1;
+        // Opening the letter
+        envelope.addEventListener('click', () => {
+            envelope.style.display = 'none';
+            letter.style.display = 'block';
+        });
 
-        // The "Run Away" Logic
+        // The running "No" button
         noBtn.addEventListener('mouseover', () => {
-            // Move No Button
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             
-            noBtn.style.position = 'fixed';
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
-
-            // Make Yes Button bigger
-            yesScale += 0.15;
-            yesBtn.style.transform = `scale(${yesScale})`;
-
-            // Make No Button smaller
-            noScale -= 0.05;
-            noBtn.style.transform = `scale(${noScale})`;
+            noBtn.style.position = 'fixed';
+            
+            // Subtle "Yes" growth
+            const currentScale = parseFloat(yesBtn.style.transform.replace('scale(', '')) || 1;
+            yesBtn.style.transform = `scale(${currentScale + 0.1})`;
         });
 
-        // The "Success" Logic
+        // The final "Yes"
         yesBtn.addEventListener('click', () => {
-            mainStage.style.display = 'none';
-            celebrationStage.style.display = 'block';
-            document.body.style.background = '#ffcad4'; // Darker pink background
+            controls.style.display = 'none';
+            questionText.style.display = 'none';
+            successMsg.style.display = 'block';
+            document.body.style.background = '#ffb3c1';
         });
     </script>
 </body>
