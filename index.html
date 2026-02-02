@@ -26,14 +26,13 @@
             transition: background 0.5s steps(4);
         }
 
-        /* Retro Pulse Animation */
         @keyframes pixel-heart {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
 
-        /* Screen 1: Custom Envelope */
+        /* STAGE 1: ENVELOPE (2x Size) */
         .envelope-wrapper {
             cursor: pointer;
             text-align: center;
@@ -41,24 +40,17 @@
         }
 
         .custom-envelope {
-            width: 250px;
+            width: 500px; /* Doubled from 250px */
             height: auto;
             image-rendering: pixelated;
-            filter: drop-shadow(8px 8px 0 rgba(0,0,0,0.1));
+            filter: drop-shadow(10px 10px 0 rgba(0,0,0,0.1));
         }
 
-        .click-text {
-            margin-top: 25px;
-            font-size: 0.7rem;
-            color: var(--pixel-dark);
-            letter-spacing: 2px;
-        }
-
-        /* Screen 2: The Letter */
+        /* STAGE 2: THE LETTER */
         .letter {
             display: none;
             width: 90%;
-            max-width: 500px;
+            max-width: 550px;
             background: white;
             padding: 40px 20px;
             border: 8px solid var(--pixel-dark);
@@ -68,7 +60,6 @@
 
         h1 { color: var(--pixel-red); font-size: 1rem; line-height: 1.8; margin-bottom: 40px; }
 
-        /* Buttons */
         .btn-container { height: 120px; display: flex; justify-content: center; align-items: center; gap: 20px; }
 
         button {
@@ -83,16 +74,15 @@
         }
 
         button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--pixel-dark); }
-
         #yesBtn { background: var(--pixel-red); color: white; transition: transform 0.1s steps(2); }
         #noBtn { position: absolute; }
 
-        /* Screen 3: Slot Machine */
+        /* STAGE 3: SLOT MACHINE */
         #slot-container {
             display: none;
             position: relative;
-            width: 350px;
-            height: 350px;
+            width: 450px;
+            height: 450px;
             margin: 0 auto;
             background-image: url('slot-machine.png'); 
             background-size: contain;
@@ -102,27 +92,27 @@
 
         .slots-ui {
             position: absolute;
-            top: 135px; /* Adjust if your machine image slots are higher/lower */
+            top: 150px; 
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 12px;
+            gap: 15px;
         }
 
         .slot {
-            width: 52px;
-            height: 70px;
+            width: 75px;
+            height: 90px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
             background: white;
-            border: 3px solid var(--pixel-dark);
+            border: 4px solid var(--pixel-dark);
         }
 
         #spinBtn {
             position: absolute;
-            bottom: 40px;
+            bottom: 75px;
             left: 50%;
             transform: translateX(-50%);
             width: 180px;
@@ -130,20 +120,14 @@
             color: white;
         }
 
-        #gift-reveal { 
-            font-size: 0.6rem; 
-            margin-top: 15px; 
-            color: var(--pixel-dark); 
-            line-height: 1.4;
-        }
+        #gift-reveal { font-size: 0.7rem; margin-top: 10px; color: var(--pixel-dark); }
     </style>
 </head>
 <body>
 
     <div class="envelope-wrapper" id="envelopeWrapper">
         <img src="envelope.png" alt="Envelope" class="custom-envelope">
-        <p class="click-text">[ CLICK TO OPEN ]</p>
-    </div>
+        </div>
 
     <div class="letter" id="letter">
         <div id="askStage">
@@ -175,51 +159,42 @@
         const spinBtn = document.getElementById('spinBtn');
         const giftText = document.getElementById('gift-reveal');
 
-        // Custom Gifts List
         const gifts = [
             { emoji: '🍕', name: 'PIZZA DATE' },
             { emoji: '🎮', name: 'NEW GAME UNLOCKED' },
-            { emoji: '🎬', name: 'MOVIE NIGHT' },
-            { emoji: '💖', name: 'BIG SURPRISE' }
+            { emoji: '🍿', name: 'MOVIE NIGHT' },
+            { emoji: '🎁', name: 'MYSTERY LOOT' }
         ];
 
-        // 1. Open Letter
         envelope.addEventListener('click', () => {
             envelope.style.display = 'none';
             letter.style.display = 'block';
         });
 
-        // 2. No Button "Run Away" logic
         noBtn.addEventListener('mouseover', () => {
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             noBtn.style.position = 'fixed';
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
-            
-            // "Yes" button grows bigger
             const currentScale = parseFloat(yesBtn.style.transform.replace('scale(', '')) || 1;
             yesBtn.style.transform = `scale(${currentScale + 0.1})`;
         });
 
-        // 3. Move to Slot Machine
         yesBtn.addEventListener('click', () => {
             askStage.style.display = 'none';
             slotContainer.style.display = 'block';
             document.body.style.background = '#ff758f';
         });
 
-        // 4. Slot Machine Spin
         spinBtn.addEventListener('click', () => {
             spinBtn.disabled = true;
-            giftText.innerText = "SPINNING...";
+            giftText.innerText = "ROLLING...";
             let count = 0;
-            
             const interval = setInterval(() => {
                 document.getElementById('slot1').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
                 document.getElementById('slot2').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
                 document.getElementById('slot3').innerText = gifts[Math.floor(Math.random() * gifts.length)].emoji;
-                
                 count++;
                 if (count > 20) {
                     clearInterval(interval);
@@ -227,9 +202,7 @@
                     document.getElementById('slot1').innerText = final.emoji;
                     document.getElementById('slot2').innerText = final.emoji;
                     document.getElementById('slot3').innerText = final.emoji;
-                    
-                    giftText.innerText = `ITEM ACQUIRED: ${final.name}`;
-                    spinBtn.innerText = "RE-ROLL?";
+                    giftText.innerText = `REWARD: ${final.name}`;
                     spinBtn.disabled = false;
                 }
             }, 80);
